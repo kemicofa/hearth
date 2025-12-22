@@ -1,0 +1,17 @@
+[package]
+name = "domain"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+async-trait = "0.1.89"
+chrono = { version = "0.4.42", features = ["serde"] }
+errors = { path = "../errors" }
+macros = { path = "../macros" }
+serde = { version = "1.0.228", features = ["derive"] }
+validator = { version = "0.20.0", features = ["derive"] }
+uuid = { version = "1", features = ["serde", "v4"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt"] }
+serde_json = "1.0.145"

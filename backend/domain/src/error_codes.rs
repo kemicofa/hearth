@@ -1,0 +1,1 @@
+pub const USER_NOT_FOUND_ERROR_CODE: &str = "USER_NOT_FOUND";
