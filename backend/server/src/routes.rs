@@ -12,3 +12,9 @@ pub async fn create_user_handler(
     let dto: CreateUserDTO = serde_json::from_str(req_body.as_str()).unwrap();
     dependencies.create_user.execute(dto).await.map(|_| HttpResponse::Created().finish())
 }
+
+// #[post("/signup/email")]
+// pub async fn signup_email_handler(
+//     Dependencies: web::Data<Dependencies>,
+//     req_body: String
+// ) -> Result<HttpResponse, ZwitterError> {}

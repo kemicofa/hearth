@@ -1,6 +1,6 @@
 use chrono::{ DateTime, NaiveDate, Utc };
 use serde::Deserialize;
-use uuid::{ Uuid, uuid };
+use uuid::{ Uuid };
 use validator::Validate;
 
 #[derive(Debug, Validate, Clone)]
@@ -42,4 +42,10 @@ pub struct CreateUserDTO {
     pub birthday: NaiveDate,
     #[validate(email)]
     pub email: String,
+}
+
+impl CreateUserDTO {
+    pub fn matches_email(&self, email: &String) -> bool {
+        self.email == *email
+    }
 }
