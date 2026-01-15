@@ -1,7 +1,6 @@
 use std::env;
 
 use dotenvy::dotenv;
-use redis::Commands;
 use sea_orm::{ Database, DatabaseConnection };
 use server::{ bootstrap::build_dependencies, server::build_server };
 

@@ -16,6 +16,7 @@ pub enum FieldValidationError {
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub enum TechnicalErrors {
     NotFound(String),
+    Unexpected(String, Option<String>),
     Unknown,
 }
 
@@ -32,6 +33,10 @@ impl ZwitterError {
     pub fn not_found(code: ErrorCode) -> Self {
         Self::Technical(TechnicalErrors::NotFound(code))
     }
+
+    pub fn unexpected(code: ErrorCode, reason: Option<String>) -> Self {
+        Self::Technical(TechnicalErrors::Unexpected(code, reason))
+    }
 }
 
 impl ResponseError for ZwitterError {
@@ -40,6 +45,8 @@ impl ResponseError for ZwitterError {
             ZwitterError::Domain(_) => StatusCode::BAD_GATEWAY,
             ZwitterError::Technical(TechnicalErrors::NotFound(_)) => StatusCode::NOT_FOUND,
             ZwitterError::Technical(TechnicalErrors::Unknown) => StatusCode::INTERNAL_SERVER_ERROR,
+            ZwitterError::Technical(TechnicalErrors::Unexpected(_, _)) =>
+                StatusCode::INTERNAL_SERVER_ERROR,
             ZwitterError::Validation(_, _) => StatusCode::BAD_REQUEST,
             ZwitterError::Unexpected(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }

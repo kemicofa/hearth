@@ -4,16 +4,18 @@ use async_trait::async_trait;
 use domain::repositories::email_verifications_repository::EmailVerificationRepository;
 use email_verification_code::EmailVerificationCode;
 use errors::ZwitterError;
-use redis::Client;
+use redis::{ AsyncCommands, Client, RedisError };
 
 pub struct EmailVerificationsRepositoryRedis {
     client: Arc<Client>,
+    ttl: u64,
 }
 
 impl EmailVerificationsRepositoryRedis {
     pub fn new(client: Arc<Client>) -> Self {
         Self {
             client,
+            ttl: 60 * 60, // TTL set to expire after an hour
         }
     }
 }
@@ -25,14 +27,34 @@ impl EmailVerificationRepository for EmailVerificationsRepositoryRedis {
         email: &String,
         code: &EmailVerificationCode
     ) -> Result<(), ZwitterError> {
-        todo!();
+        let mut con = self.client
+            .get_multiplexed_async_connection().await
+            .map_err(|e|
+                ZwitterError::unexpected("EVR_STORE_ASYNC_CON".into(), Some(e.to_string()))
+            )?;
+
+        match con.set_ex::<&String, &String, u64>(email, &code.code, self.ttl).await {
+            Ok(_) => Ok(()),
+            Err(e) => Err(ZwitterError::unexpected("EVR_STORE".into(), Some(e.to_string()))),
+        }
     }
 
     async fn code_matches(
         &self,
         email: &String,
-        code: &EmailVerificationCode
+        evc: &EmailVerificationCode
     ) -> Result<bool, ZwitterError> {
-        todo!();
+        let mut con = self.client
+            .get_multiplexed_async_connection().await
+            .map_err(|e|
+                ZwitterError::unexpected("EVR_CODE_MATCHES_ASYNC_CON".into(), Some(e.to_string()))
+            )?;
+
+        let code = con.get::<&String, String>(email).await.map_err(|e| {
+            RedisError::code(&e);
+            ZwitterError::unexpected("EVR_CODE_MATCHES_ASYNG_GET".into(), Some(e.to_string()))
+        })?;
+
+        Ok(evc.code == code)
     }
 }
