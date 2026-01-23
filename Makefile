@@ -72,7 +72,7 @@ help:
 
 .PHONY: client-install
 client-install:
-	@cd $(CLIENT_DIR) && npm install
+	@cd $(CLIENT_DIR) && pnpm install
 
 .PHONY: backend-build
 backend-build:
@@ -80,7 +80,7 @@ backend-build:
 
 .PHONY: client-dev
 client-dev: client-install
-	@cd $(CLIENT_DIR) && npm run dev
+	@cd $(CLIENT_DIR) && pnpm run dev
 
 .PHONY: backend-dev
 backend-dev:
