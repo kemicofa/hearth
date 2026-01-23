@@ -14,6 +14,8 @@
 <main class="container">
   <h1>Welcome to Tauri + Svelte</h1>
 
+  <a href="/signup">Signup</a>
+
   <div class="row">
     <a href="https://vite.dev" target="_blank">
       <img src="/vite.svg" class="logo vite" alt="Vite Logo" />
