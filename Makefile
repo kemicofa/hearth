@@ -3,7 +3,6 @@ SHELL := /bin/bash
 REQUIRED_CONTAINERS := $(shell cat docker-compose.yaml | grep "container_name" | cut -d ":" -f2 | xargs)
 
 CLIENT_DIR := client
-BACKEND_DIR := backend
 
 .PHONY: check-podman
 check-podman:
@@ -76,7 +75,7 @@ client-install:
 
 .PHONY: backend-build
 backend-build:
-	@cd $(BACKEND_DIR) && cargo build
+	@cargo build
 
 .PHONY: client-dev
 client-dev: client-install
@@ -84,7 +83,7 @@ client-dev: client-install
 
 .PHONY: backend-dev
 backend-dev:
-	@cd $(BACKEND_DIR) && cargo run
+	@cargo run
 
 # Run both processes in parallel; Ctrl+C stops both.
 .PHONY: dev
@@ -97,5 +96,9 @@ dev: wait-containers
 
 .PHONY: clean
 clean:
-	@cd $(BACKEND_DIR) && cargo clean
+	@cargo clean
+
+.PHONE: migrate
+migrate:
+	@cargo migrate
 

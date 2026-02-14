@@ -1,0 +1,3 @@
+[workspace]
+members = ["backend/server", "backend/domain", "backend/errors", "backend/macros", "backend/migration", "backend/email_verification_code", "client/src-tauri"]
+resolver = "3"

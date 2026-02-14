@@ -1,3 +1,0 @@
-[workspace]
-members = ["server", "domain", "errors", "macros", "migration", "email_verification_code"]
-resolver = "3"
