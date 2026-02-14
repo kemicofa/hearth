@@ -16,7 +16,7 @@
 
   <a href="/signup">Signup</a>
 
-  <div class="row">
+  <div class="row dark bg-bg">
     <a href="https://vite.dev" target="_blank">
       <img src="/vite.svg" class="logo vite" alt="Vite Logo" />
     </a>
