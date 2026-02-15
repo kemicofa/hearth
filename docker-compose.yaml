@@ -2,18 +2,18 @@ version: "3.8"
 services:
   database:
     image: postgres:17
-    container_name: zwitter-postgres 
+    container_name: hearth-postgres
     environment:
-      POSTGRES_DB: zwitter
-      POSTGRES_PASSWORD: zwitter
-      POSTGRES_USER: zwitter
+      POSTGRES_DB: hearth
+      POSTGRES_PASSWORD: hearth
+      POSTGRES_USER: hearth
     ports:
       - 5432:5432
     restart: on-failure:3
 
   redis:
     image: redis:latest
-    container_name: zwitter-redis
+    container_name: hearth-redis
     command: redis-server
     ports:
       - 6379:6379

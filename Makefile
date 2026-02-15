@@ -87,7 +87,7 @@ backend-dev:
 
 # Run both processes in parallel; Ctrl+C stops both.
 .PHONY: dev
-dev: wait-containers
+dev: migrate
 	@set -e; \
 	trap 'echo ""; echo "Stopping..."; kill 0' INT TERM; \
 	( $(MAKE) client-dev ) & \
@@ -99,6 +99,6 @@ clean:
 	@cargo clean
 
 .PHONE: migrate
-migrate:
+migrate: wait-containers
 	@cargo migrate
 

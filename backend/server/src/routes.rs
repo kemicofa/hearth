@@ -1,20 +1,18 @@
-use actix_web::{ HttpResponse, post, web };
-use domain::{ dtos::user::CreateUserDTO };
-use errors::ZwitterError;
+use actix_web::{HttpResponse, post, web};
+use domain::dtos::signup::SignupEmailDTO;
+use errors::HearthError;
 
 use crate::bootstrap::Dependencies;
 
-#[post("/users")]
-pub async fn create_user_handler(
+#[post("/signup/email")]
+pub async fn signup_email_handler(
     dependencies: web::Data<Dependencies>,
-    req_body: String
-) -> Result<HttpResponse, ZwitterError> {
-    let dto: CreateUserDTO = serde_json::from_str(req_body.as_str()).unwrap();
-    dependencies.create_user.execute(dto).await.map(|_| HttpResponse::Created().finish())
+    req_body: String,
+) -> Result<HttpResponse, HearthError> {
+    let dto: SignupEmailDTO = serde_json::from_str(req_body.as_str()).unwrap();
+    dependencies
+        .signup_with_email
+        .execute(dto)
+        .await
+        .map(|_| HttpResponse::Created().finish())
 }
-
-// #[post("/signup/email")]
-// pub async fn signup_email_handler(
-//     Dependencies: web::Data<Dependencies>,
-//     req_body: String
-// ) -> Result<HttpResponse, ZwitterError> {}

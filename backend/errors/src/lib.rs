@@ -1,5 +1,5 @@
-use actix_web::{ HttpResponse, ResponseError, http::StatusCode };
-use serde::{ Deserialize, Serialize };
+use actix_web::{HttpResponse, ResponseError, http::StatusCode};
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use validator::ValidationErrors;
 
@@ -22,14 +22,18 @@ pub enum TechnicalErrors {
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Error)]
 #[serde(tag = "error", content = "message")]
-pub enum ZwitterError {
-    #[error("technical error")] Technical(TechnicalErrors),
-    #[error("domain error")] Domain(ErrorCode),
-    #[error("unexpected error")] Unexpected(ErrorCode),
-    #[error("validation error")] Validation(ErrorCode, ValidationErrors),
+pub enum HearthError {
+    #[error("technical error")]
+    Technical(TechnicalErrors),
+    #[error("domain error")]
+    Domain(ErrorCode),
+    #[error("unexpected error")]
+    Unexpected(ErrorCode),
+    #[error("validation error")]
+    Validation(ErrorCode, ValidationErrors),
 }
 
-impl ZwitterError {
+impl HearthError {
     pub fn not_found(code: ErrorCode) -> Self {
         Self::Technical(TechnicalErrors::NotFound(code))
     }
@@ -39,16 +43,17 @@ impl ZwitterError {
     }
 }
 
-impl ResponseError for ZwitterError {
+impl ResponseError for HearthError {
     fn status_code(&self) -> actix_web::http::StatusCode {
         match self {
-            ZwitterError::Domain(_) => StatusCode::BAD_GATEWAY,
-            ZwitterError::Technical(TechnicalErrors::NotFound(_)) => StatusCode::NOT_FOUND,
-            ZwitterError::Technical(TechnicalErrors::Unknown) => StatusCode::INTERNAL_SERVER_ERROR,
-            ZwitterError::Technical(TechnicalErrors::Unexpected(_, _)) =>
-                StatusCode::INTERNAL_SERVER_ERROR,
-            ZwitterError::Validation(_, _) => StatusCode::BAD_REQUEST,
-            ZwitterError::Unexpected(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            HearthError::Domain(_) => StatusCode::BAD_GATEWAY,
+            HearthError::Technical(TechnicalErrors::NotFound(_)) => StatusCode::NOT_FOUND,
+            HearthError::Technical(TechnicalErrors::Unknown) => StatusCode::INTERNAL_SERVER_ERROR,
+            HearthError::Technical(TechnicalErrors::Unexpected(_, _)) => {
+                StatusCode::INTERNAL_SERVER_ERROR
+            }
+            HearthError::Validation(_, _) => StatusCode::BAD_REQUEST,
+            HearthError::Unexpected(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 

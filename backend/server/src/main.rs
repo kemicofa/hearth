@@ -1,22 +1,24 @@
 use std::env;
 
 use dotenvy::dotenv;
-use sea_orm::{ Database, DatabaseConnection };
-use server::{ bootstrap::build_dependencies, server::build_server };
+use sea_orm::{Database, DatabaseConnection};
+use server::{bootstrap::build_dependencies, server::build_server};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
 
-    rustls::crypto::ring
-        ::default_provider()
+    rustls::crypto::ring::default_provider()
         .install_default()
         .expect("Failed to install rustls crypto provider");
 
     // Env variables
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
     let redis_url = env::var("REDIS_URL").expect("REDIS_URL is not set in .env file");
-    let port = env::var("PORT").expect("PORT is not set in .env file").parse::<u16>().unwrap();
+    let port = env::var("PORT")
+        .expect("PORT is not set in .env file")
+        .parse::<u16>()
+        .unwrap();
 
     // Database stuff
     let db: DatabaseConnection = Database::connect(db_url).await.unwrap();
