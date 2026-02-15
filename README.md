@@ -1,4 +1,4 @@
-# Zwitter
+# Hearth
 
 Open source twitter alternative
 
