@@ -102,3 +102,7 @@ clean:
 migrate: wait-containers
 	@cargo migrate
 
+.PHONE: generate-entities 
+generate-entities: migrate 
+	@sea generate entity --output-dir ./backend/server/src/database/entities
+
