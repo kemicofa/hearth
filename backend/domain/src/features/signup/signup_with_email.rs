@@ -4,7 +4,7 @@ use macros::BArc;
 use validator::Validate;
 
 use crate::{
-    dtos::{auth::CredentialsDTO, signup::SignupEmailDTO, user::CreateUserDTO},
+    dtos::{ auth::CredentialsDTO, signup::SignupEmailDTO, user::CreateUserDTO },
     features::feature::Feature,
     repositories::users_repository::UsersRepository,
 };
@@ -31,10 +31,7 @@ impl Feature<SignupEmailDTO, ()> for SignupWithEmail {
         }
 
         {
-            let exists = self
-                .users_repository
-                .username_exists(&input.username)
-                .await?;
+            let exists = self.users_repository.username_exists(&input.username).await?;
 
             if exists {
                 return Err(HearthError::Domain("USERNAME_ALREADY_TAKEN".into()));
@@ -50,12 +47,10 @@ impl Feature<SignupEmailDTO, ()> for SignupWithEmail {
 
         let credentials_dto = CredentialsDTO {
             user_id: input.user_id,
-            password: input.password,
+            password_hash: hasher::hash!(input.password),
         };
 
-        self.users_repository
-            .create(create_user_dto, credentials_dto)
-            .await?;
+        self.users_repository.create(create_user_dto, credentials_dto).await?;
         Ok(())
     }
 }
@@ -64,15 +59,15 @@ impl Feature<SignupEmailDTO, ()> for SignupWithEmail {
 mod tests {
     use crate::{
         dtos::auth::CredentialsDTO,
-        features::{feature::Feature, signup::signup_with_email::SignupWithEmail},
+        features::{ feature::Feature, signup::signup_with_email::SignupWithEmail },
     };
     use chrono::NaiveDate;
     use errors::HearthError;
-    use macros::{BArc, barc};
+    use macros::{ BArc, barc };
     use uuid::Uuid;
 
     use crate::{
-        dtos::{signup::SignupEmailDTO, user::CreateUserDTO},
+        dtos::{ signup::SignupEmailDTO, user::CreateUserDTO },
         repositories::users_repository::UsersRepository,
         test_utils::test_utils::InMemoryUserRepository,
     };
@@ -95,8 +90,9 @@ mod tests {
 
     impl Default for SignupWithEmail {
         fn default() -> Self {
-            let users_repository: BArc<dyn UsersRepository> =
-                barc!(InMemoryUserRepository::default());
+            let users_repository: BArc<dyn UsersRepository> = barc!(
+                InMemoryUserRepository::default()
+            );
             Self { users_repository }
         }
     }
@@ -135,7 +131,7 @@ mod tests {
 
         let credentials_dto = CredentialsDTO {
             user_id,
-            password: PASSWORD.into(),
+            password_hash: hasher::hash!(PASSWORD),
         };
 
         let signup_with_email = SignupWithEmail::from_existing_user(dto, credentials_dto);
@@ -162,7 +158,7 @@ mod tests {
 
         let credentials_dto = CredentialsDTO {
             user_id,
-            password: PASSWORD.into(),
+            password_hash: hasher::hash!(PASSWORD),
         };
 
         let signup_with_email = SignupWithEmail::from_existing_user(dto, credentials_dto);

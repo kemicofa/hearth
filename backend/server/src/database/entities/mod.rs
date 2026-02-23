@@ -2,6 +2,6 @@
 
 pub mod prelude;
 
-pub mod email_password_credentials;
+pub mod credentials;
 pub mod email_verified;
 pub mod users;

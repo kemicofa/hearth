@@ -12,6 +12,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 validator = { version = "0.20.0", features = ["derive"] }
 uuid = { version = "1", features = ["serde", "v4"] }
 email_verification_code = { path = "../email_verification_code" }
+hasher = { path = "../hasher" }
 
 [dev-dependencies]
 tokio = { version = "1", features = ["macros", "rt"] }

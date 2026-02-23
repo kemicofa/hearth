@@ -1,7 +1,7 @@
 use sea_orm_migration::{prelude::*, schema::*};
 
 const TABLE_USERS: &str = "users";
-const TABLE_EMAIL_PASSWORD_CREDENTIALS: &str = "email_password_credentials";
+const TABLE_CREDENTIALS: &str = "credentials";
 const TABLE_EMAIL_VERIFIED: &str = "email_verified";
 
 #[derive(DeriveMigrationName)]
@@ -31,11 +31,10 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(TABLE_EMAIL_PASSWORD_CREDENTIALS)
+                    .table(TABLE_CREDENTIALS)
                     .col(pk_uuid("id").not_null())
                     .col(string("user_id").not_null().unique_key()) // should be indexed
                     .col(string("password_hash").not_null())
-                    .col(boolean("is_verified").not_null().default(false))
                     .col(
                         timestamp("created_at")
                             .not_null()
@@ -57,6 +56,7 @@ impl MigrationTrait for Migration {
                     .table(TABLE_USERS)
                     .if_not_exists()
                     .col(pk_uuid("id"))
+                    .col(boolean("is_verified").not_null().default(false))
                     .col(string("username").unique_key())
                     .col(string("email").unique_key())
                     .col(date("birthday").not_null())
@@ -84,9 +84,10 @@ impl MigrationTrait for Migration {
         manager
             .drop_table(
                 Table::drop()
-                    .table(TABLE_EMAIL_PASSWORD_CREDENTIALS)
+                    .table(TABLE_CREDENTIALS)
                     .to_owned(),
             )
-            .await
+            .await?;
+        manager.drop_table(Table::drop().table(TABLE_EMAIL_VERIFIED).to_owned()).await
     }
 }

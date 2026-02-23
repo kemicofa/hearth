@@ -2,7 +2,7 @@ use std::env;
 
 use dotenvy::dotenv;
 use sea_orm::{Database, DatabaseConnection};
-use server::{bootstrap::build_dependencies, server::build_server};
+use server::{bootstrap::build_dependencies, database::postgres_connector::connect, server::build_server};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -21,7 +21,7 @@ async fn main() -> std::io::Result<()> {
         .unwrap();
 
     // Database stuff
-    let db: DatabaseConnection = Database::connect(db_url).await.unwrap();
+    let db: DatabaseConnection = connect(&db_url).await;
     let client = redis::Client::open(redis_url).unwrap();
 
     // Building Dependencies

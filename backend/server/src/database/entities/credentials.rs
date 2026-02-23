@@ -3,14 +3,13 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
-#[sea_orm(table_name = "email_password_credentials")]
+#[sea_orm(table_name = "credentials")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
     #[sea_orm(unique)]
     pub user_id: String,
     pub password_hash: String,
-    pub is_verified: bool,
     pub created_at: DateTime,
     pub updated_at: DateTime,
 }

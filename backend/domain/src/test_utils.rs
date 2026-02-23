@@ -1,15 +1,9 @@
 #[cfg(test)]
 pub mod test_utils {
-    use std::{
-        collections::HashMap,
-        sync::{Arc, Mutex},
-    };
+    use std::{ collections::HashMap, sync::{ Arc, Mutex } };
 
     use crate::{
-        dtos::{
-            auth::CredentialsDTO,
-            user::{CreateUserDTO, UserDTO},
-        },
+        dtos::{ auth::CredentialsDTO, user::{ CreateUserDTO, UserDTO } },
         error_codes::USER_NOT_FOUND_ERROR_CODE,
         repositories::{
             credentials_repository::CredentialsRepository,
@@ -36,7 +30,7 @@ pub mod test_utils {
         async fn send_verify_email(
             &self,
             _email: &String,
-            _code: &EmailVerificationCode,
+            _code: &EmailVerificationCode
         ) -> Result<(), HearthError> {
             Ok(())
         }
@@ -67,7 +61,7 @@ pub mod test_utils {
         async fn store(
             &self,
             email: &String,
-            code: &EmailVerificationCode,
+            code: &EmailVerificationCode
         ) -> Result<(), HearthError> {
             self.map.lock().unwrap().insert(email.clone(), code.clone());
             Ok(())
@@ -76,7 +70,7 @@ pub mod test_utils {
         async fn code_matches(
             &self,
             email: &String,
-            code: &EmailVerificationCode,
+            code: &EmailVerificationCode
         ) -> Result<bool, HearthError> {
             let map = self.map.lock().unwrap();
             let stored_code = map.get(email);
@@ -101,13 +95,13 @@ pub mod test_utils {
 
     impl InMemoryUserRepository {
         pub fn from_existing_user(dto: CreateUserDTO, credentials_dto: CredentialsDTO) -> Self {
-            let users: HashMap<String, UserDTO> =
-                HashMap::from([(dto.user_id.to_string(), UserDTO::new(dto))]);
+            let users: HashMap<String, UserDTO> = HashMap::from([
+                (dto.user_id.to_string(), UserDTO::new(dto)),
+            ]);
 
-            let credentials: HashMap<String, String> = HashMap::from([(
-                credentials_dto.user_id.to_string(),
-                credentials_dto.password.clone(),
-            )]);
+            let credentials: HashMap<String, String> = HashMap::from([
+                (credentials_dto.user_id.to_string(), credentials_dto.password_hash.clone()),
+            ]);
             Self {
                 users: Arc::new(Mutex::new(users)),
                 credentials: Arc::new(Mutex::new(credentials)),
@@ -120,16 +114,13 @@ pub mod test_utils {
         async fn create(
             &self,
             dto: CreateUserDTO,
-            credentials_dto: CredentialsDTO,
+            credentials_dto: CredentialsDTO
         ) -> Result<(), HearthError> {
-            self.users
+            self.users.lock().unwrap().insert(dto.user_id.to_string(), UserDTO::new(dto));
+            self.credentials
                 .lock()
                 .unwrap()
-                .insert(dto.user_id.to_string(), UserDTO::new(dto));
-            self.credentials.lock().unwrap().insert(
-                credentials_dto.user_id.to_string(),
-                credentials_dto.password.clone(),
-            );
+                .insert(credentials_dto.user_id.to_string(), credentials_dto.password_hash.clone());
             Ok(())
         }
 
